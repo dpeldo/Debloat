@@ -4,12 +4,20 @@ param([switch]$Silent, [string]$RunType, [switch]$SystemRestore, [switch]$ForceR
 
 if (-not ([string]::IsNullOrEmpty($LogPath)))
 {
-    
+
     #If a log path is provided, dump output to a file. If log file exists, it will append to it.
+    If (Test-Path $LogPath)
+    {
     $ErrorActionPreference="SilentlyContinue"
     Stop-Transcript | out-null
     $ErrorActionPreference = "Continue"
     Start-Transcript -path $LogPath -append
+    }
+    Else
+    {
+        Write-Output "The path provided does not yet exist. Please create the path and try again, or try another path."
+        Exit;
+    }
 
 }
 
