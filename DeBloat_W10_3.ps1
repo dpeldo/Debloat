@@ -2,6 +2,17 @@
 param([switch]$Silent, [string]$RunType, [switch]$SystemRestore, [switch]$ForceReboot, [switch]$RevertDefaultPDF)
 
 
+if (-not ([string]::IsNullOrEmpty($LogPath)))
+{
+    
+    #If a log path is provided, dump output to a file. If log file exists, it will append to it.
+    $ErrorActionPreference="SilentlyContinue"
+    Stop-Transcript | out-null
+    $ErrorActionPreference = "Continue"
+    Start-Transcript -path $LogPath -append
+
+}
+
 
 Function Start-Debloat {
     
@@ -531,4 +542,9 @@ Else
             }
         }
     
+}
+
+if (-not ([string]::IsNullOrEmpty($LogPath)))
+{
+    Stop-Transcript
 }
