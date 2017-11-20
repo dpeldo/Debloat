@@ -7,7 +7,7 @@ DETAILS
 Additions: Silent switches for individual windows 10 debloat options found in the interactive debloat utility. This should allow different MDT environments to utilize each option as requirements dictate. Each interaction has an optional command line replacement.
 
 USAGE:
-Debloat_W10_3.ps1 -Silent True/False -Runtype Debloat/Revert -SystemRestore True/False -ForceReboot True/False -RevertDefaultPDF True/False
+Debloat_W10_3.ps1 -Silent True/False -Runtype Debloat/Revert -SystemRestore True/False -ForceReboot True/False -RevertDefaultPDF True/False -LogPath c:\folder\examplelogfile.txt
 
 ADDITIONAL INFORMATION:
 The script still has output to the screen for informational purposes. That information could be removed if needed or a future modification would be to dump the output to a log file instead. 
