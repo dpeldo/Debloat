@@ -88,30 +88,31 @@ Function Remove-Keys {
         
 Function Protect-Privacy {
     
-    [CmdletBinding()]
-    
-    Param()
+    Param([switch]$Debloat)    
+
+    #Creates a PSDrive to be able to access the 'HKCR' tree
+    New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
         
     #Disables Windows Feedback Experience
     Write-Output "Disabling Windows Feedback Experience program"
-    If (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo') {
-        $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
+    $Advertising = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
+    If (Test-Path $Advertising) {
         Set-ItemProperty $Advertising -Name Enabled -Value 0 -Verbose
     }
         
     #Stops Cortana from being used as part of your Windows Search Function
     Write-Output "Stopping Cortana from being used as part of your Windows Search Function"
-    If ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search') {
-        $Search = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search'
+    $Search = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search'
+    If (Test-Path $Search) {
         Set-ItemProperty $Search -Name AllowCortana -Value 0 -Verbose
     }
         
     #Stops the Windows Feedback Experience from sending anonymous data
     Write-Output "Stopping the Windows Feedback Experience program"
-    If ('HKCU:\Software\Microsoft\Siuf\Rules\PeriodInNanoSeconds') { 
-        $Period1 = 'HKCU:\Software\Microsoft\Siuf'
-        $Period2 = 'HKCU:\Software\Microsoft\Siuf\Rules'
-        $Period3 = 'HKCU:\Software\Microsoft\Siuf\Rules\PeriodInNanoSeconds'
+    $Period1 = 'HKCU:\Software\Microsoft\Siuf'
+    $Period2 = 'HKCU:\Software\Microsoft\Siuf\Rules'
+    $Period3 = 'HKCU:\Software\Microsoft\Siuf\Rules\PeriodInNanoSeconds'
+    If (!(Test-Path $Period3)) { 
         mkdir $Period1 -ErrorAction SilentlyContinue
         mkdir $Period2 -ErrorAction SilentlyContinue
         mkdir $Period3 -ErrorAction SilentlyContinue
@@ -120,56 +121,47 @@ Function Protect-Privacy {
                
     Write-Output "Adding Registry key to prevent bloatware apps from returning"
     #Prevents bloatware applications from returning
-    If ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Cloud Content') {
-        $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Cloud Content"
+    $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Cloud Content"
+    If (!(Test-Path $registryPath)) {
         Mkdir $registryPath -ErrorAction SilentlyContinue
         New-ItemProperty $registryPath -Name DisableWindowsConsumerFeatures -Value 1 -Verbose -ErrorAction SilentlyContinue
     }          
     
-    Write-Output "Setting Mixed Reality Portal value to 1 so that you can uninstall it in Settings"
-    If ('HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic') {
-        $Holo = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic'
-        Set-ItemProperty $Holo -Name FirstRunSucceeded -Value 1 -Verbose
+    Write-Output "Setting Mixed Reality Portal value to 0 so that you can uninstall it in Settings"
+    $Holo = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic'    
+    If (Test-Path $Holo) {
+        Set-ItemProperty $Holo -Name FirstRunSucceeded -Value 0 -Verbose
     }
     
     #Disables live tiles
     Write-Output "Disabling live tiles"
-    If (!(Test-Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications')) {
-        mkdir 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications' -ErrorAction SilentlyContinue     
-        $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'
+    $Live = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications'    
+    If (!(Test-Path $Live)) {
+        mkdir $Live -ErrorAction SilentlyContinue     
         New-ItemProperty $Live -Name NoTileApplicationNotification -Value 1 -Verbose
     }
     
     #Turns off Data Collection via the AllowTelemtry key by changing it to 0
-    If ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection') {
-        $DataCollection = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection'
+    Write-Output "Turning off Data Collection"
+    $DataCollection = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection'    
+    If (Test-Path $DataCollection) {
         Set-ItemProperty $DataCollection -Name AllowTelemetry -Value 0 -Verbose
     }
     
     #Disables People icon on Taskbar
     Write-Output "Disabling People icon on Taskbar"
-    If (!(Test-Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People')) {
-        mkdir 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People' -ErrorAction SilentlyContinue
-        $People = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People'
+    $People = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People'    
+    If (!(Test-Path $People)) {
+        mkdir $People -ErrorAction SilentlyContinue
         New-ItemProperty $People -Name PeopleBand -Value 0 -Verbose
     }
 
     #Disables suggestions on start menu
     Write-Output "Disabling suggestions on the Start Menu"
-    If ('HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager') {
-        $Suggestions = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'
-        Set-ItemProperty $Suggestions -Name SystemPaneSuggestionsEnabled -Value 0 Verbose
+    $Suggestions = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'    
+    If (Test-Path $Suggestions) {
+        Set-ItemProperty $Suggestions -Name SystemPaneSuggestionsEnabled -Value 0 -Verbose
     }
-    
-    #Disables scheduled tasks that are considered unnecessary 
-    Write-Output "Disabling scheduled tasks"
-    Get-ScheduledTask -TaskName XblGameSaveTaskLogon | Disable-ScheduledTask
-    Get-ScheduledTask -TaskName XblGameSaveTask | Disable-ScheduledTask
-    Get-ScheduledTask -TaskName Consolidator | Disable-ScheduledTask
-    Get-ScheduledTask -TaskName UsbCeip | Disable-ScheduledTask
-    Get-ScheduledTask -TaskName DmClient | Disable-ScheduledTask
-    Get-ScheduledTask -TaskName DmClientOnScenarioDownload | Disable-ScheduledTask
-}
     
 Function Stop-EdgePDF {
     
