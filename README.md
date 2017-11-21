@@ -14,3 +14,10 @@ The script still has output to the screen for informational purposes. That infor
 
 DISCLAIMER:
 Run at your own risk. I do not assume any responsibility for damage done to any machine. Please doublecheck the code to make sure it meets your requirements before final implementation.
+
+NOTE: 
+Earlier versions of de-bloat scripts may have removed apps that you want back in. If you find some are missing, just add them back by opening a powershell with administrative elevation and use commands like the following.
+
+Get-AppxPackage -allusers Microsoft.WindowsStore | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+
+Get-AppxPackage -allusers Microsoft.WindowsCalculator | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
