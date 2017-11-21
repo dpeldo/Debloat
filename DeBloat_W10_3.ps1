@@ -24,22 +24,21 @@ Function Start-Debloat {
     
     #Removes AppxPackages
     Get-AppxPackage -AllUsers | 
-        Where-Object {$_.AppxPackage -notlike "*Microsoft.FreshPaint*"} | 
-        Where-Object {$_.AppxPackage -notlike "*Microsoft.WindowsCalculator*"} |
-        Where-Object {$_.AppxPackage -notlike "*Microsoft.WindowsStore*"} | 
-        Where-Object {$_.AppxPackage -notlike "*Microsoft.Windows.Photos*"} |
-        Remove-AppxPackage -ErrorAction SilentlyContinue 
-        
+        Where-Object {$_.name -notlike "*Microsoft.FreshPaint*"} | 
+        Where-Object {$_.name -notlike "*Microsoft.WindowsCalculator*"} |
+        Where-Object {$_.name -notlike "*Microsoft.WindowsStore*"} | 
+        Where-Object {$_.name -notlike "*Microsoft.Windows.Photos*"} |
+        Remove-AppxPackage -ErrorAction SilentlyContinue
+            
     #Removes AppxProvisionedPackages
     Get-AppxProvisionedPackage -online |
-        Where-Object {$_.AppxProvisionedPackage -notlike "*Microsoft.FreshPaint*"} |
-        Where-Object {$_.AppxProvisionedPackage -notlike "*Microsoft.WindowsCalculator*"} |
-        Where-Object {$_.AppxProvisionedPackage -notlike "*Microsoft.WindowsStore*"} |
-        Where-Object {$_.AppxProvisionedPackage -notlike "*Microsoft.Windows.Photos*"} |
+        Where-Object {$_.packagename -notlike "*Microsoft.FreshPaint*"} |
+        Where-Object {$_.packagename -notlike "*Microsoft.WindowsCalculator*"} |
+        Where-Object {$_.name -notlike "*Microsoft.WindowsStore*"} |
+        Where-Object {$_.name -notlike "*Microsoft.Windows.Photos*"} |
         Remove-AppxProvisionedPackage -online -ErrorAction SilentlyContinue
-
-
 }
+
 Function Remove-Keys {
     
     [CmdletBinding()]
