@@ -18,10 +18,9 @@ if (-not ([string]::IsNullOrEmpty($LogPath)))
 
 Function Start-Debloat {
     
-    [CmdletBinding()]
-        
-    Param()
-    
+    param
+    ([switch]$Debloat)
+
     #Removes AppxPackages
     Get-AppxPackage -AllUsers | 
         Where-Object {$_.name -notlike "*Microsoft.FreshPaint*"} | 
@@ -29,7 +28,7 @@ Function Start-Debloat {
         Where-Object {$_.name -notlike "*Microsoft.WindowsStore*"} | 
         Where-Object {$_.name -notlike "*Microsoft.Windows.Photos*"} |
         Remove-AppxPackage -ErrorAction SilentlyContinue
-            
+        
     #Removes AppxProvisionedPackages
     Get-AppxProvisionedPackage -online |
         Where-Object {$_.packagename -notlike "*Microsoft.FreshPaint*"} |
