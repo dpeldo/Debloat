@@ -1,5 +1,5 @@
-﻿# Useage: ScriptName.ps1 -Silent True/False -Runtype Debloat/Revert -SystemRestore True/False -ForceReboot True/False -RevertDefaultPDF True/False
-param([switch]$Silent, [string]$RunType, [switch]$SystemRestore, [switch]$ForceReboot, [switch]$RevertDefaultPDF)
+﻿# Useage: ScriptName.ps1 -Silent True/False -Runtype Debloat/Revert -SystemRestore True/False -ForceReboot True/False -RevertDefaultPDF True/FalseTrue/False
+param([switch]$Silent, [string]$RunType, [switch]$SystemRestore, [switch]$ForceReboot, [switch]$RevertDefaultPDF, [string]$LogPath)
 
 
 if (-not ([string]::IsNullOrEmpty($LogPath)))
